@@ -2,19 +2,19 @@ import os
 import http.server
 import socketserver
 import threading
+import telebot
 
-# Создаем простейший веб-сервер, чтобы Render не закрывал бота
+# 1. Запуск веб-сервера для Render (чтобы не выключал бот)
 def run_dummy_server():
     handler = http.server.SimpleHTTPRequestHandler
-    with socketserver.TCPServer(("", int(os.environ.get("PORT", 8080))), handler) as httpd:
+    # Используем порт, который дает Render, или 8080 по умолчанию
+    port = int(os.environ.get("PORT", 8080))
+    with socketserver.TCPServer(("", port), handler) as httpd:
         httpd.serve_forever()
 
 threading.Thread(target=run_dummy_server, daemon=True).start()
 
-import telebot
-import os
-
-# Берем токен из настроек сервера (для безопасности на GitHub/Render)
+# 2. Настройка бота
 TOKEN = os.environ.get('BOT_TOKEN')
 bot = telebot.TeleBot(TOKEN)
 
@@ -28,8 +28,10 @@ def start_message(message):
 Запиши кружок на 5 сек: «Привет, хочу делать отзывы и получать деньги».
 
 👉 Скидывай сюда: @movsienkoivhr"""
+    
     bot.send_message(message.chat.id, text)
 
+# 3. Запуск основного цикла
 if __name__ == '__main__':
-    print("Бот запущен...")
+    print("Бот успешно запущен в облаке!")
     bot.infinity_polling()
