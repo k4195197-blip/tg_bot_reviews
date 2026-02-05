@@ -1,3 +1,15 @@
+import http.server
+import socketserver
+import threading
+
+# Создаем простейший веб-сервер, чтобы Render не закрывал бота
+def run_dummy_server():
+    handler = http.server.SimpleHTTPRequestHandler
+    with socketserver.TCPServer(("", int(os.environ.get("PORT", 8080))), handler) as httpd:
+        httpd.serve_forever()
+
+threading.Thread(target=run_dummy_server, daemon=True).start()
+
 import telebot
 import os
 
